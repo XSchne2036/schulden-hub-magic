@@ -1,73 +1,303 @@
-# Welcome to your Lovable project
+# Schulden-Management MVP
 
-## Project info
+Eine vollständig eigenständige React-Webapp zur Verwaltung und Optimierung von Schulden zwischen drei Parteien: **Schuldner (G)**, **Gläubiger (S)** und **Zahler (K)**.
 
-**URL**: https://lovable.dev/projects/00388c48-dd7e-4cc4-93c4-92c28696fffe
+## ✨ Features
 
-## How can I edit this code?
+- 📊 **Schulden erfassen** (Schuldner-Sicht)
+- 🧾 **Forderungen verwalten** (Gläubiger-Sicht)  
+- 💰 **Zahlungen melden** (Zahler-Sicht)
+- 🎯 **Optimierte Rückzahlungsstrategie** mit Priorisierungs-Algorithmus
+- 🔄 **Automatische Pool-Verteilung** basierend auf Zinsen, Restbeträgen und Kooperationsscores
+- 💾 **Import/Export als JSON** für Datensicherung
+- 🔒 **100% lokale Datenhaltung** im Browser (localStorage)
 
-There are several ways of editing your application.
+## 🚀 Schnellstart
 
-**Use Lovable**
+### Voraussetzungen
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/00388c48-dd7e-4cc4-93c4-92c28696fffe) and start prompting.
+- [Node.js](https://nodejs.org/) (Version 18 oder höher)
+- npm (wird mit Node.js installiert)
 
-Changes made via Lovable will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
+# Repository klonen
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Dependencies installieren
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Entwicklungsserver starten
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Die App ist nun unter `http://localhost:8080` erreichbar.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Produktions-Build erstellen
 
-**Use GitHub Codespaces**
+```bash
+# Statische Dateien erstellen
+npm run build
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Die fertigen Dateien befinden sich im Ordner `dist/` und können auf jeden Webserver hochgeladen werden.
 
-## What technologies are used for this project?
+## 📦 Deployment (Statisches Hosting)
 
-This project is built with:
+Die App ist eine reine Single-Page-Application ohne Backend-Abhängigkeiten.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Deployment per FTP
 
-## How can I deploy this project?
+1. Führe `npm run build` aus
+2. Lade den kompletten Inhalt des `dist/` Ordners auf deinen Webspace hoch
+3. Stelle sicher, dass alle Anfragen auf `index.html` umgeleitet werden (SPA-Routing)
 
-Simply open [Lovable](https://lovable.dev/projects/00388c48-dd7e-4cc4-93c4-92c28696fffe) and click on Share -> Publish.
+### Empfohlene Hosting-Anbieter (kostenlos)
 
-## Can I connect a custom domain to my Lovable project?
+- [Netlify](https://netlify.com) - Drag & Drop des `dist/` Ordners
+- [Vercel](https://vercel.com) - Automatisches Deployment via Git
+- [GitHub Pages](https://pages.github.com) - Kostenlos für öffentliche Repos
+- [Cloudflare Pages](https://pages.cloudflare.com) - Schnelles CDN inklusive
 
-Yes, you can!
+### Apache .htaccess (für SPA-Routing)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Falls du Apache verwendest, lege eine `.htaccess` im `dist/` Ordner an:
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```apache
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+```
+
+## 🏗️ Architektur
+
+### Technologie-Stack
+
+- **React 18** - UI-Framework
+- **TypeScript** - Typsicherheit
+- **Vite** - Build-Tool & Dev-Server
+- **Tailwind CSS** - Styling
+- **shadcn/ui** - UI-Komponenten (Open Source)
+- **React Router** - Client-seitiges Routing
+- **localStorage** - Persistierung (keine Datenbank nötig)
+
+### Projektstruktur
+
+```
+├── src/
+│   ├── components/        # Wiederverwendbare UI-Komponenten
+│   ├── pages/             # Haupt-Seiten der App
+│   │   ├── Home.tsx           # Startseite
+│   │   ├── SchuldErfassen.tsx # Schulden eintragen (G)
+│   │   ├── ForderungErfassen.tsx # Forderungen eintragen (S)
+│   │   ├── ZahlungMelden.tsx  # Zahlungen melden (K)
+│   │   ├── Optimierung.tsx    # Rückzahlungs-Optimierung
+│   │   ├── Pool.tsx           # Pool-Verwaltung
+│   │   └── ImportExport.tsx   # Daten sichern/wiederherstellen
+│   ├── services/          # Business-Logik
+│   │   ├── storage.ts         # localStorage-Verwaltung
+│   │   └── algorithmen.ts     # Priorisierung & Pool-Verteilung
+│   ├── types/             # TypeScript-Typen
+│   │   └── index.ts
+│   ├── App.tsx            # Hauptkomponente
+│   └── main.tsx           # Einstiegspunkt
+├── dist/                  # Build-Output (nach npm run build)
+├── index.html             # HTML-Template
+├── package.json           # Dependencies
+└── README.md              # Diese Datei
+```
+
+## 🧮 Algorithmen
+
+### Priorisierungs-Algorithmus (Optimierung)
+
+Schulden werden nach folgenden Regeln sortiert:
+
+1. **Zinssatz** (höher = höhere Priorität)
+2. **Restbetrag** (niedriger = höhere Priorität)  
+3. **Kooperationsscore** des Gläubigers (höher = höhere Priorität)
+
+**Code:** `src/services/algorithmen.ts` → `priorisiereSchulden()`
+
+### Pool-Verteilungs-Algorithmus
+
+Verfügbare Mittel werden gewichtet verteilt:
+
+```
+Gewichtung = zins² + (1 / restbetrag) + kooperationsscore^1.5
+```
+
+**Erklärung:**
+- **zins²**: Hohe Zinsen werden stark gewichtet (exponentiell)
+- **1/restbetrag**: Kleine Beträge können schneller abbezahlt werden
+- **kooperationsscore^1.5**: Kooperative Gläubiger werden bevorzugt
+
+**Code:** `src/services/algorithmen.ts` → `verteilePool()`
+
+## 💾 Datenstruktur (localStorage)
+
+Alle Daten werden als JSON im Browser gespeichert:
+
+```json
+{
+  "schulden": [
+    {
+      "id": "...",
+      "schuldner_id": "G123",
+      "glaeubiger_id": "S202",
+      "betrag": 120.0,
+      "restbetrag": 70.0,
+      "zins": 5.0,
+      "kommentar": "Autoreparatur",
+      "erstellt_am": "2025-10-17T10:30:00.000Z",
+      "zahlungen": [
+        {
+          "id": "...",
+          "zahler_name": "K345",
+          "betrag": 50.0,
+          "datum": "2025-10-17T12:00:00.000Z"
+        }
+      ]
+    }
+  ],
+  "forderungen": [...],
+  "pool_historie": [...],
+  "version": "1.0.0"
+}
+```
+
+## 🔐 Sicherheit & Datenschutz
+
+- ✅ **Keine externen APIs** - App läuft komplett offline-fähig
+- ✅ **Keine Lovable Cloud Dependencies** - vollständig eigenständig
+- ✅ **Keine Telemetrie** - kein Tracking, keine Analytics
+- ✅ **Keine Credentials** - keine API-Keys notwendig
+- ✅ **Lokale Datenhaltung** - Daten verlassen niemals den Browser
+- ⚠️ **Backup empfohlen** - Bei Cache-Löschung gehen Daten verloren (nutze Import/Export)
+
+## 📝 Nutzung
+
+### Als Schuldner (G)
+
+1. Gehe zu **"Schuld erfassen"**
+2. Trage deine Schulden mit Zinssatz ein
+3. Nutze **"Optimierung"**, um die beste Rückzahlungsreihenfolge zu sehen
+
+### Als Gläubiger (S)
+
+1. Gehe zu **"Forderung erfassen"**
+2. Trage offene Forderungen ein
+3. Vergebe einen Kooperationsscore (wichtig für Pool-Verteilung)
+
+### Als Zahler (K)
+
+1. Gehe zu **"Zahlung melden"**
+2. Wähle die Schuld aus, für die du gezahlt hast
+3. Betrag wird automatisch vom Restbetrag abgezogen
+
+### Pool-Verwaltung
+
+1. Gehe zu **"Pool"**
+2. Gib verfügbaren Betrag ein
+3. Klicke auf **"Vorschau berechnen"**
+4. Überprüfe die Verteilung und führe sie durch
+
+### Daten sichern
+
+1. Gehe zu **"Import / Export"**
+2. Klicke auf **"Als Datei herunterladen"**
+3. Bewahre die JSON-Datei sicher auf
+
+## 🧪 Entwicklung
+
+### Verfügbare Scripts
+
+```bash
+npm run dev        # Entwicklungsserver (Port 8080)
+npm run build      # Produktions-Build
+npm run preview    # Build lokal testen
+npm run lint       # Code-Linting
+```
+
+### Code-Qualität
+
+- TypeScript für Typsicherheit
+- ESLint für Code-Qualität
+- Klare Kommentare in kritischen Bereichen
+- Funktionstrennung (UI ↔ Logik)
+
+## 📄 Lizenz
+
+**MIT License**
+
+Du darfst den Code frei verwenden, modifizieren und verteilen - auch kommerziell.
+
+```
+Copyright (c) 2025
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## 🆘 Support & FAQ
+
+### Die App lädt nicht
+
+- Lösche Browser-Cache und lade neu
+- Stelle sicher, dass JavaScript aktiviert ist
+- Teste in einem anderen Browser
+
+### Daten sind weg
+
+- Prüfe, ob du im gleichen Browser/Gerät bist
+- Wurde der Browser-Cache gelöscht?
+- Nutze regelmäßig die Export-Funktion für Backups
+
+### Kann ich die App auf mehreren Geräten nutzen?
+
+Ja, über die Import/Export-Funktion:
+1. Exportiere Daten auf Gerät A
+2. Übertrage JSON-Datei (z.B. per E-Mail)
+3. Importiere auf Gerät B
+
+## 🎯 Roadmap (Optional)
+
+Mögliche Erweiterungen:
+
+- [ ] Cloud-Sync via selbst-gehosteter API
+- [ ] PDF-Export für Berichte
+- [ ] Erinnerungen für Zahlungen
+- [ ] Multi-Währungs-Support
+- [ ] Erweiterte Statistiken & Charts
+
+## 🤝 Beitragen
+
+Du kannst den Code frei modifizieren. Bei Fragen oder Verbesserungsvorschlägen:
+- Öffne ein Issue im Git-Repository
+- Erstelle einen Pull Request
+
+---
+
+**Entwickelt mit Lovable.dev** - Ein Lovable-Projekt kann exportiert und vollständig selbst gehostet werden. Keine Vendor-Lock-Ins! 🚀
